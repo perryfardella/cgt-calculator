@@ -33,17 +33,38 @@ export default function Home() {
     updateComputedValues(newValues);
   };
 
-  const updateComputedValues = (newValues: typeof values) => {
-    const priorLosses = parseFloat(newValues.priorLosses) || 0;
-    const shortTermGains = parseFloat(newValues.shortTermGains) || 0;
-    const longTermGains = parseFloat(newValues.longTermGains) || 0;
+  const updateComputedValues = (
+    newValues: typeof values,
+    entityType: EntityType = selectedEntity
+  ) => {
+    const parseCurrencyValue = (value: string) => {
+      // Remove currency symbol, commas, and any other non-numeric characters except decimal point
+      const cleanedValue = value.replace(/[^0-9.-]/g, "");
+      return parseFloat(cleanedValue) || 0;
+    };
 
+    const priorLosses = parseCurrencyValue(newValues.priorLosses);
+    const shortTermGains = parseCurrencyValue(newValues.shortTermGains);
+    const longTermGains = parseCurrencyValue(newValues.longTermGains);
+
+    console.log("Parsed values:", {
+      priorLosses,
+      shortTermGains,
+      longTermGains,
+    });
+
+    const remainingLosses = Math.max(priorLosses - shortTermGains, 0);
+    const longTermGainsAfterLosses = Math.max(
+      longTermGains - remainingLosses,
+      0
+    );
     const grossGains = shortTermGains + longTermGains - priorLosses;
+
     const discountRate =
-      selectedEntity === EntityType.IndividualOrTrust ? 0.5 : 0.33;
-    const discount = grossGains > 0 ? grossGains * discountRate : 0;
-    const netGains = grossGains > 0 ? grossGains - discount : 0;
-    const lossesForward = grossGains < 0 ? -grossGains : 0;
+      entityType === EntityType.IndividualOrTrust ? 0.5 : 0.3333;
+    const discount = longTermGainsAfterLosses * discountRate;
+    const netGains = Math.max(grossGains - discount, 0);
+    const lossesForward = grossGains < 0 ? grossGains : 0;
 
     setComputedValues({
       grossGains: grossGains.toFixed(2),
@@ -55,7 +76,7 @@ export default function Home() {
 
   const handleEntityChange = (newEntity: EntityType) => {
     setSelectedEntity(newEntity);
-    updateComputedValues(values);
+    updateComputedValues(values, newEntity);
   };
 
   const formatCurrency = (value: string) => {
@@ -70,8 +91,21 @@ export default function Home() {
         }).format(number);
   };
 
+  const handleInputFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    const numericValue = value.replace(/[^0-9.]/g, "");
+    setValues((prev) => ({ ...prev, [name]: numericValue }));
+  };
+
+  const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    const numericValue = value.replace(/[^0-9.]/g, "");
+    const formattedValue = formatCurrency(numericValue);
+    setValues((prev) => ({ ...prev, [name]: formattedValue }));
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center p-24">
+    <main className="flex min-h-screen flex-col items-center p-24 gap-8">
       <h1>Australian CGT Tax Calculator</h1>
       <div className="join">
         <input
@@ -101,22 +135,35 @@ export default function Home() {
           { name: "shortTermGains", label: "Short term capital gains" },
           { name: "longTermGains", label: "Long term capital gains" },
         ].map((field) => (
-          <label key={field.name} className="form-control w-full max-w-xs">
+          <label
+            key={field.name}
+            className="form-control w-full max-w-xs gap-1"
+          >
             <span className="label-text">{field.label}</span>
-            <input
-              type="text"
-              name={field.name}
-              value={formatCurrency(values[field.name as keyof typeof values])}
-              onChange={handleInputChange}
-              placeholder="$0.00"
-              className="input input-bordered w-full max-w-xs"
-            />
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                $
+              </span>
+              <input
+                type="text"
+                name={field.name}
+                value={values[field.name as keyof typeof values].replace(
+                  "$",
+                  ""
+                )}
+                onChange={handleInputChange}
+                onFocus={handleInputFocus}
+                onBlur={handleInputBlur}
+                placeholder="0.00"
+                className="input input-bordered w-full max-w-xs pl-6"
+              />
+            </div>
           </label>
         ))}
 
         {/* Computed (disabled) inputs */}
         {[
-          { name: "grossGains", label: "Gross capital gains" },
+          { name: "grossGains", label: "Gross capital gain / (loss)" },
           { name: "discount", label: "Capital gain discount" },
           { name: "netGains", label: "Net capital gains" },
           {
@@ -124,7 +171,10 @@ export default function Home() {
             label: "Capital losses carried forward to future years",
           },
         ].map((field) => (
-          <label key={field.name} className="form-control w-full max-w-xs">
+          <label
+            key={field.name}
+            className="form-control w-full max-w-xs gap-1"
+          >
             <span className="label-text">{field.label}</span>
             <input
               type="text"

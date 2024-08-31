@@ -116,7 +116,7 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center p-24 gap-8">
-      <h1>Australian CGT Tax Calculator</h1>
+      <h1>Australian Capital Gains Tax calculator</h1>
       <div className="join">
         <input
           className="join-item btn"

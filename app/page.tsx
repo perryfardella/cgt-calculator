@@ -5,7 +5,13 @@ import { useState } from "react";
 enum EntityType {
   IndividualOrTrust = "individualOrTrust",
   SMSF = "smsf",
+  Company = "company",
 }
+
+// TODO: Add a field for current year capital losses
+// Add a reset button
+// Add a prompt, over 10K gain or loss? you need a cgt schedule, I'm build software to assist with this, would you be interested --> take to Typeform, see if I get interest
+// Write first blog article, tweet it.
 
 export default function Home() {
   const [values, setValues] = useState({
@@ -61,7 +67,11 @@ export default function Home() {
     const grossGains = shortTermGains + longTermGains - priorLosses;
 
     const discountRate =
-      entityType === EntityType.IndividualOrTrust ? 0.5 : 0.3333;
+      entityType === EntityType.IndividualOrTrust
+        ? 0.5
+        : entityType === EntityType.SMSF
+        ? 0.3333
+        : 0; // 0% discount for Company
     const discount = longTermGainsAfterLosses * discountRate;
     const netGains = Math.max(grossGains - discount, 0);
     const lossesForward = grossGains < 0 ? grossGains : 0;
@@ -123,6 +133,14 @@ export default function Home() {
           aria-label="SMSF"
           checked={selectedEntity === EntityType.SMSF}
           onChange={() => handleEntityChange(EntityType.SMSF)}
+        />
+        <input
+          className="join-item btn"
+          type="radio"
+          name="options"
+          aria-label="Company"
+          checked={selectedEntity === EntityType.Company}
+          onChange={() => handleEntityChange(EntityType.Company)}
         />
       </div>
       <div className="flex flex-col gap-4">

@@ -134,7 +134,7 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-12 gap-8">
+    <main className="flex min-h-screen flex-col items-center p-8 gap-8">
       <h1>Australian Capital Gains Tax calculator</h1>
       <div className="join">
         <input

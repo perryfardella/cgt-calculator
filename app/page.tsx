@@ -16,6 +16,7 @@ enum EntityType {
 export default function Home() {
   const [values, setValues] = useState({
     priorLosses: "",
+    currentYearLosses: "",
     shortTermGains: "",
     longTermGains: "",
   });
@@ -50,21 +51,24 @@ export default function Home() {
     };
 
     const priorLosses = parseCurrencyValue(newValues.priorLosses);
+    const currentYearLosses = parseCurrencyValue(newValues.currentYearLosses);
     const shortTermGains = parseCurrencyValue(newValues.shortTermGains);
     const longTermGains = parseCurrencyValue(newValues.longTermGains);
 
     console.log("Parsed values:", {
       priorLosses,
+      currentYearLosses, // Added logging
       shortTermGains,
       longTermGains,
     });
 
-    const remainingLosses = Math.max(priorLosses - shortTermGains, 0);
+    const totalLosses = priorLosses + currentYearLosses;
+    const remainingLosses = Math.max(totalLosses - shortTermGains, 0);
     const longTermGainsAfterLosses = Math.max(
       longTermGains - remainingLosses,
       0
     );
-    const grossGains = shortTermGains + longTermGains - priorLosses;
+    const grossGains = shortTermGains + longTermGains - totalLosses;
 
     const discountRate =
       entityType === EntityType.IndividualOrTrust
@@ -114,8 +118,23 @@ export default function Home() {
     setValues((prev) => ({ ...prev, [name]: formattedValue }));
   };
 
+  const handleReset = () => {
+    setValues({
+      priorLosses: "",
+      currentYearLosses: "",
+      shortTermGains: "",
+      longTermGains: "",
+    });
+    setComputedValues({
+      grossGains: "",
+      discount: "",
+      netGains: "",
+      lossesForward: "",
+    });
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center p-24 gap-8">
+    <main className="flex min-h-screen flex-col items-center p-12 gap-8">
       <h1>Australian Capital Gains Tax calculator</h1>
       <div className="join">
         <input
@@ -149,6 +168,10 @@ export default function Home() {
           {
             name: "priorLosses",
             label: "Unapplied capital losses from prior years",
+          },
+          {
+            name: "currentYearLosses",
+            label: "Current year capital losses",
           },
           { name: "shortTermGains", label: "Short term capital gains" },
           { name: "longTermGains", label: "Long term capital gains" },
@@ -207,6 +230,9 @@ export default function Home() {
           </label>
         ))}
       </div>
+      <button className="btn btn-primary" onClick={handleReset}>
+        Reset
+      </button>
     </main>
   );
 }

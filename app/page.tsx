@@ -233,6 +233,14 @@ export default function Home() {
       <button className="btn btn-primary" onClick={handleReset}>
         Reset
       </button>
+      <p>
+        This calculator is for guidance purposes only and is not financial
+        advice, seek professional guidance before using these numbers in your
+        tax return. Whilst much care has been used to ensure the accuracy of
+        this calculator, some assumptions have been made to simplify these
+        calculations, including that the user is a resident and the financial
+        year is 2024.
+      </p>
     </main>
   );
 }

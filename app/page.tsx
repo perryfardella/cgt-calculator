@@ -8,10 +8,8 @@ enum EntityType {
   Company = "company",
 }
 
-// TODO: Add a field for current year capital losses
-// Add a reset button
+// TODO: Add analytics
 // Add a prompt, over 10K gain or loss? you need a cgt schedule, I'm build software to assist with this, would you be interested --> take to Typeform, see if I get interest
-// Write first blog article, tweet it.
 
 export default function Home() {
   const [values, setValues] = useState({
@@ -135,7 +133,17 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center p-8 gap-8">
-      <h1>Australian Capital Gains Tax calculator</h1>
+      <h1 className="text-center">
+        Australian Capital Gains Tax calculator <br /> by{" "}
+        <a
+          href="https://perryfardella.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-500"
+        >
+          Perry Fardella
+        </a>
+      </h1>
       <div className="join">
         <input
           className="join-item btn"
@@ -235,9 +243,9 @@ export default function Home() {
       </button>
       <p>
         This calculator is for guidance purposes only and is not financial
-        advice, seek professional guidance before using these numbers in your
-        tax return. Whilst much care has been used to ensure the accuracy of
-        this calculator, some assumptions have been made to simplify these
+        advice; seek professional guidance before relying on these numbers for
+        anything. Whilst much care has been used to ensure the accuracy of this
+        calculator, some assumptions have been made to simplify these
         calculations, including that the user is a resident and the financial
         year is 2024.
       </p>

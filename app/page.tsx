@@ -241,7 +241,7 @@ export default function Home() {
       <button className="btn btn-primary" onClick={handleReset}>
         Reset
       </button>
-      <p>
+      <p className="text-xs text-center">
         This calculator is for guidance purposes only and is not financial
         advice; seek professional guidance before relying on these numbers for
         anything. Whilst much care has been used to ensure the accuracy of this

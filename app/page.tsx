@@ -8,7 +8,6 @@ enum EntityType {
   Company = "company",
 }
 
-// TODO: Add analytics
 // Add a prompt, over 10K gain or loss? you need a cgt schedule, I'm build software to assist with this, would you be interested --> take to Typeform, see if I get interest
 
 export default function Home() {

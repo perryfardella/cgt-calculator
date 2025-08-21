@@ -37,6 +37,20 @@ export default function Home() {
     updateComputedValues(newValues);
   };
 
+  const getDiscountRate = (entityType: EntityType) => {
+    return entityType === EntityType.IndividualOrTrust
+      ? 0.5
+      : entityType === EntityType.SMSF
+      ? 0.3333
+      : 0; // 0% discount for Company
+  };
+
+  const getDiscountLabel = (entityType: EntityType) => {
+    const rate = getDiscountRate(entityType);
+    const percentage = `${(rate * 100).toFixed(2)}%`;
+    return `Capital gain discount (${percentage})`;
+  };
+
   const updateComputedValues = (
     newValues: typeof values,
     entityType: EntityType = selectedEntity
@@ -67,12 +81,7 @@ export default function Home() {
     );
     const grossGains = shortTermGains + longTermGains - totalLosses;
 
-    const discountRate =
-      entityType === EntityType.IndividualOrTrust
-        ? 0.5
-        : entityType === EntityType.SMSF
-        ? 0.3333
-        : 0; // 0% discount for Company
+    const discountRate = getDiscountRate(entityType);
     const discount = longTermGainsAfterLosses * discountRate;
     const netGains = Math.max(grossGains - discount, 0);
     const lossesForward = grossGains < 0 ? grossGains : 0;
@@ -212,7 +221,10 @@ export default function Home() {
         {/* Computed (disabled) inputs */}
         {[
           { name: "grossGains", label: "Gross capital gain / (loss)" },
-          { name: "discount", label: "Capital gain discount" },
+          {
+            name: "discount",
+            label: getDiscountLabel(selectedEntity),
+          },
           { name: "netGains", label: "Net capital gains" },
           {
             name: "lossesForward",

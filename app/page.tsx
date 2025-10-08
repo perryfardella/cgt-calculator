@@ -258,7 +258,7 @@ export default function Home() {
         anything. Whilst much care has been used to ensure the accuracy of this
         calculator, some assumptions have been made to simplify these
         calculations, including that the user is a resident and the financial
-        year is 2025.
+        year is 2026.
       </p>
     </main>
   );
